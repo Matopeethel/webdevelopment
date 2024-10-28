@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gradient-to-r from-blue-50 to-indigo-100 flex items-center justify-center min-h-screen"
+  >
+    <div class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
+      <h1 class="text-3xl font-bold mb-8 text-center text-gray-700">
+        Edit Profile
+      </h1>
+
+      <div class="mb-6">
+        <label for="email" class="block text-sm font-medium text-gray-600 mb-2"
+          >Email Address</label
+        >
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400"
+          placeholder="Enter your email"
+          value="ethel.matope@example.com"
+        />
+      </div>
+
+      <div class="mb-6">
+        <label
+          for="password"
+          class="block text-sm font-medium text-gray-600 mb-2"
+        >
+          New Password <span class="text-gray-400">(optional)</span>
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400"
+          placeholder="Enter new password"
+        />
+      </div>
+
+      <button
+        onclick="handleSubmit()"
+        class="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200"
+      >
+        Save Changes
+      </button>
+
+      <div class="mt-6 text-center">
+        <a
+          href="user-profile.html"
+          class="text-sm text-indigo-600 hover:underline"
+          >Back to Profile</a
+        >
+      </div>
+    </div>
+
+    <script>
+      function handleSubmit() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        if (!email.includes('@') || !email.includes('.')) {
+          alert('Please enter a valid email address');
+          return false;
+        }
+
+        if (password !== '' && password.length < 10) {
+          alert('New password must be at least 10 characters long');
+          return false;
+        }
+
+        editUserProfile(email, password);
+        return true;
+      }
+
+      async function editUserProfile(email, password) {
+        const token = localStorage.getItem('token');
+        if (!token) return window.alert('User is not authenticated');
+
+        try {
+          const userId = localStorage.getItem('id');
+          const url = `http://localhost:3000/api/users/${userId}/edit-profile`;
+          const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await response.json();
+          window.alert('Profile updated successfully!');
+          console.log('Edit Profile Response:', data);
+        } catch (error) {
+          window.alert('An error occurred: ' + error.message);
+        }
+      }
+    </script>
+  </body>
+</html>
